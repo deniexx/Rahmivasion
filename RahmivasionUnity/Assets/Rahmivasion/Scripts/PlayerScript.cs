@@ -6,7 +6,7 @@ public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private LayerMask lmWalls;
     [Header("Movement Variables")]
-    [SerializeField] private float fJumpVelocity = 5f;
+    [SerializeField] private float fJumpVelocity = 14f;
     [SerializeField] private float fJumpPressedRememberTime = 0.1f;
     [SerializeField] private float fGroundedRememberTime = 0.15f;
     [SerializeField] private float fHorizontalAcceleration = 0.25f;
