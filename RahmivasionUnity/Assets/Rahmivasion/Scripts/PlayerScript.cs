@@ -31,9 +31,18 @@ public class PlayerScript : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
+    }
+
+    private void OnEnable()
+    {
         _healthComp.onGameObjectDamagedDelegate += OnHealthChanged;
     }
-        
+
+    private void OnDisable()
+    {
+        _healthComp.onGameObjectDamagedDelegate -= OnHealthChanged;
+    }
+
     void Update()
     {
         Vector2 v2GroundedBoxCheckPosition = (Vector2) transform.position + new Vector2(0, -0.5f);
