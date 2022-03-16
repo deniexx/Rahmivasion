@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-public class PlayerMovement : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
+public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private LayerMask lmWalls;
     [Header("Movement Variables")]
@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float fMaxSpeed = 4f;
 
     private Rigidbody2D _rb;
+    private HealthComponent _healthComp;
 
     private bool flipped;
 
@@ -29,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
+        _healthComp.onGameObjectDamagedDelegate += OnHealthChanged;
     }
         
     void Update()
@@ -81,6 +84,12 @@ public class PlayerMovement : MonoBehaviour
             _rb.velocity = new Vector2(0.0f, _rb.velocity.y);
         }
     }
+
+    private void OnHealthChanged(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta)
+    {
+        // @TODO: Implement event to flash the player when he has been damaged and stuff
+        Debug.Log($"Health has been changed. New Health is {currentHealth}");
+    }
     
     private void AnimateCharacter(float inputStrength)
     {
@@ -109,5 +118,11 @@ public class PlayerMovement : MonoBehaviour
     public void StopPlayerInPlace()
     {
         _rb.velocity = new Vector2(0.0f, 0.0f);
+    }
+
+    // Input from the on screen buttons
+    public void JumpFromButton()
+    {
+        fJumpPressedRemember = fJumpPressedRememberTime;
     }
 }
