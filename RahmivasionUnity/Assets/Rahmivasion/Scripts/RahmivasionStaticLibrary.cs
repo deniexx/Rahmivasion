@@ -30,4 +30,16 @@ public class RahmivasionStaticLibrary : MonoBehaviour
             healthComp.Kill();
         }
     }
+
+    public static bool ApplyGameObjectHealthChange(GameObject instigator, GameObject gameObjectToDamge, float delta)
+    {
+        HealthComponent healthComp = gameObjectToDamge.GetComponent<HealthComponent>();
+
+        if (healthComp != null)
+        {
+            return healthComp.ApplyHealthChange(instigator, delta);
+        }
+
+        return false;
+    }
 }

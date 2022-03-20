@@ -27,7 +27,7 @@ public class PlayerScript : MonoBehaviour
     private float fJumpPressedRemember = 0;
     private float fGroundedRemember = 0f;
 
-    void Start()
+    void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
