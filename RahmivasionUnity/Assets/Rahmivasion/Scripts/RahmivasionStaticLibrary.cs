@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RahmivasionStaticLibrary : MonoBehaviour
@@ -7,7 +5,7 @@ public class RahmivasionStaticLibrary : MonoBehaviour
     /// <summary>
     /// Returns the health component of a selected game object
     /// </summary>
-    /// <param name="gameObject">The gameObject to take attemp to get the health component from</param>
+    /// <param name="gameObject">The gameObject to take attempt to get the health component from</param>
     /// <returns>The gameObject's healthComponent</returns>
     public static HealthComponent GetHealthComponent(GameObject gameObject)
     {
@@ -18,7 +16,7 @@ public class RahmivasionStaticLibrary : MonoBehaviour
     /// Checks if the gameObject is alive
     /// </summary>
     /// <param name="gameObject">The gameObject that should be checked if it is alive</param>
-    /// <returns>Returns wherether the game object is alive, if it does not have HealthComponent, return value will be false</returns>
+    /// <returns>Returns whether the game object is alive, if it does not have HealthComponent, return value will be false</returns>
     public static bool IsGameObjectAlive(GameObject gameObject)
     {
         HealthComponent healthComp = gameObject.GetComponent<HealthComponent>();
@@ -51,7 +49,7 @@ public class RahmivasionStaticLibrary : MonoBehaviour
     /// <param name="instigator">The gameObject that is calling this event</param>
     /// <param name="gameObjectToDamge">The gameObject that should be damaged</param>
     /// <param name="delta">The health delta to be applied, must be negative to apply damage</param>
-    /// <returns>Return true if health change has been sucessfully applied, ie health has been changed</returns>
+    /// <returns>Return true if health change has been successfully applied, ie health has been changed</returns>
     public static bool ApplyGameObjectHealthChange(GameObject instigator, GameObject gameObjectToDamge, float delta)
     {
         HealthComponent healthComp = gameObjectToDamge.GetComponent<HealthComponent>();

@@ -17,8 +17,8 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] [Range(0, 1)] private float fHorizontalDampingWhenTurning = 0.5f;
     [SerializeField] [Range(0, 1)] private float fJumpCutHeight = 0.5f;
 
-    [SerializeField] private Vector2 forwardTouchPosition = new Vector2();
-    [SerializeField] private Vector2 backwardTouchPosition = new Vector2();
+    [SerializeField] private Vector2 forwardTouchPosition;
+    [SerializeField] private Vector2 backwardTouchPosition;
     
     [SerializeField] private float fMaxSpeed = 4f;
 
@@ -28,10 +28,9 @@ public class PlayerScript : MonoBehaviour
     private HealthComponent _healthComp;
 
     private bool flipped;
-
-    private float touchStrenght;
-    private float fJumpPressedRemember = 0;
-    private float fGroundedRemember = 0f;
+    
+    private float fJumpPressedRemember;
+    private float fGroundedRemember;
 
     void Awake()
     {
@@ -55,8 +54,14 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
-        Vector2 v2GroundedBoxCheckPosition = (Vector2) transform.position + new Vector2(0, -0.5f);
-        Vector2 v2GroundedBoxCheckScale = (Vector2) transform.localScale + new Vector2(-0.02f, 0);
+        ProcessMovement();
+    }
+    
+    private void ProcessMovement()
+    {
+        var pTransform = transform;
+        Vector2 v2GroundedBoxCheckPosition = (Vector2) pTransform.position + new Vector2(0, -0.5f);
+        Vector2 v2GroundedBoxCheckScale = (Vector2) pTransform.localScale + new Vector2(-0.02f, 0);
         bool bGrounded = Physics2D.OverlapBox(v2GroundedBoxCheckPosition, v2GroundedBoxCheckScale, 0, lmWalls);
 
         fGroundedRemember -= Time.deltaTime;
@@ -69,7 +74,9 @@ public class PlayerScript : MonoBehaviour
         {
             if (_rb.velocity.y > 0)
             {
-                _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y * fJumpCutHeight);
+                var velocity = _rb.velocity;
+                velocity = new Vector2(velocity.x, velocity.y * fJumpCutHeight);
+                _rb.velocity = velocity;
             }
         }
                
@@ -84,7 +91,6 @@ public class PlayerScript : MonoBehaviour
         float fHorizontalVelocity = _rb.velocity.x;
         float inputStrength = Input.GetAxisRaw("Horizontal");
         
-        /*
         if (Input.touchCount > 0)
         {
             for (int i = 0; i < Input.touchCount; ++i)
@@ -98,9 +104,7 @@ public class PlayerScript : MonoBehaviour
                 else inputStrength = 0;
             }
         }
-        */
-
-        inputStrength = touchStrenght != 0 ? touchStrenght : inputStrength;
+        
         fHorizontalVelocity += inputStrength * fHorizontalAcceleration;
     
         if (Math.Abs(Input.GetAxisRaw("Horizontal")) < 0.01f)
@@ -121,12 +125,7 @@ public class PlayerScript : MonoBehaviour
             _rb.velocity = new Vector2(0.0f, _rb.velocity.y);
         }
     }
-/*
-    private void LateUpdate()
-    {
-        touchStrenght = 0.0f;
-    }
-*/
+
     private void OnHealthChanged(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta)
     {
         // @TODO: Implement event to flash the player when he has been damaged and stuff
@@ -166,15 +165,5 @@ public class PlayerScript : MonoBehaviour
     public void JumpFromButton()
     {
         fJumpPressedRemember = fJumpPressedRememberTime;
-    }
-
-    public void SetPlayerTouchStrength(float value)
-    {
-        touchStrenght = value;
-    }
-
-    private void ResetTouchStrength()
-    {
-        touchStrenght = 0.0f;
     }
 }

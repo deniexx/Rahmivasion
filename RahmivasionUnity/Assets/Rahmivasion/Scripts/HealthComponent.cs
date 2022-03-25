@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthComponent : MonoBehaviour
@@ -23,7 +21,7 @@ public class HealthComponent : MonoBehaviour
     /// </summary>
     /// <param name="instigator">This is the gameObject that has called this event</param>
     /// <param name="delta">The difference in health to be applied, should be negative number if you want to apply damage</param>
-    /// <returns></returns>
+    /// <returns>Returns true if there was a change in the health of the player</returns>
     public bool ApplyHealthChange(GameObject instigator, float delta)
     {
         float oldHealth = currentHealth;
