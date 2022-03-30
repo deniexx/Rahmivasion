@@ -1,10 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Button))]
-public class ButtonHold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
+public class BetterButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
+    public UnityEvent OnClickEvent;
+    public UnityEvent OnReleasedEvent;
+    public UnityEvent OnHoldEvent;
+
     private Button button;
 
     private bool buttonPressed = false;
@@ -19,12 +24,14 @@ public class ButtonHold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     void Update()
     {
         if (buttonPressed)
-            button.onClick?.Invoke();
+            OnHoldEvent?.Invoke();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         if (!button.interactable) return;
+
+        OnClickEvent?.Invoke();
         buttonPressed = true;
     }
 
@@ -32,13 +39,21 @@ public class ButtonHold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     {
         if (!button.interactable) return;
 
-        buttonPressed = false;
+        if (buttonPressed)
+        {
+            OnReleasedEvent?.Invoke();
+            buttonPressed = false;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!button.interactable) return;
 
-        buttonPressed = false;
+        if (buttonPressed)
+        {
+            OnReleasedEvent?.Invoke();
+            buttonPressed = false;
+        }
     }
 }

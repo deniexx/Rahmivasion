@@ -178,6 +178,8 @@ MonoBehaviour:
   fHorizontalDampingWhenStopping: 0.7
   fHorizontalDampingWhenTurning: 0.5
   fJumpCutHeight: 0.5
+  forwardTouchPosition: {x: 0, y: 0}
+  backwardTouchPosition: {x: 0, y: 0}
   fMaxSpeed: 4
 --- !u!114 &9093573248687826054
 MonoBehaviour:
@@ -191,5 +193,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cef518e3406904bb66e2c8e82efebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseHealth: 100
-  maxHealth: 100
+  baseHealth: 6
+  maxHealth: 6

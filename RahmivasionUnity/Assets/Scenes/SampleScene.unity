@@ -212,6 +212,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b991c5ac09b596946994bd49e1132531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnClickEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: SetInputStrength
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: -1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnReleasedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: ResetInputStrength
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnHoldEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &76132837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,6 +441,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4010715787125248102, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: m_SortingLayer
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4010715787125248102, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4010715787125248102, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 868043377
+      objectReference: {fileID: 0}
     - target: {fileID: 4010715787490464917, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -452,9 +497,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4010715787490464919, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4010715787490464920, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 9093573248687826054, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: maxHealth
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 9093573248687826054, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: baseHealth
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
@@ -470,6 +527,7 @@ GameObject:
   - component: {fileID: 340903160}
   - component: {fileID: 340903159}
   - component: {fileID: 340903158}
+  - component: {fileID: 340903161}
   m_Layer: 5
   m_Name: UpButton
   m_TagString: Untagged
@@ -540,19 +598,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 340903159}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1748311902}
-        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
-        m_MethodName: JumpFromButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &340903159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -591,6 +637,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 340903156}
   m_CullTransparentMesh: 1
+--- !u!114 &340903161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340903156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b991c5ac09b596946994bd49e1132531, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClickEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: JumpFromButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnReleasedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: JumpButtonReleased
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnHoldEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &368333942
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +811,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447416913}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -782,6 +873,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b991c5ac09b596946994bd49e1132531, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnClickEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: SetInputStrength
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnReleasedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1748311902}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: ResetInputStrength
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnHoldEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &447416918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -914,7 +1038,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -938,7 +1062,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.7200003, y: -0.44999975, z: -10.366126}
+  m_LocalPosition: {x: -5.7200003, y: 0.55000025, z: -10.366126}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1839824329}
@@ -989,7 +1113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ad980451443d70438faac0bc6c235a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackedObjectOffset: {x: 2.5, y: 0, z: 0}
+  m_TrackedObjectOffset: {x: 2.5, y: 1, z: 0}
   m_LookaheadTime: 0.6
   m_LookaheadSmoothing: 4
   m_LookaheadIgnoreY: 0
@@ -1181,14 +1305,14 @@ MonoBehaviour:
   m_Follow: {fileID: 1748311905}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 4
+    OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7777778, y: 1}
+    m_SensorSize: {x: 2.1213872, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1205,7 +1329,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1476220754}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.7200003, y: -0.44999975, z: -10.366126}
+  m_LocalPosition: {x: -5.7200003, y: 0.55000025, z: -10.366126}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1018122111}
@@ -1269,8 +1393,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1751036035
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 5127c065fa0981b469450c1da92fa4c1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1295,7 +1419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74107c20e71a3e146a8ce0dc03618369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DamageToApply: -20
+  DamageToApply: -3
 --- !u!61 &1719526517
 BoxCollider2D:
   m_ObjectHideFlags: 0

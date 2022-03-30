@@ -6,8 +6,8 @@ public class HealthComponent : MonoBehaviour
     public OnGameObjectDamagedDelegate onGameObjectDamagedDelegate;
 
     [Header("Health Variables")]
-    [SerializeField] private float baseHealth = 100.0f;
-    [SerializeField] private float maxHealth = 100.0f;
+    [SerializeField] private float baseHealth = 6.0f;
+    [SerializeField] private float maxHealth = 6.0f;
 
     private float currentHealth = 0.0f;
 
@@ -20,9 +20,9 @@ public class HealthComponent : MonoBehaviour
     /// Applies change to health based on delta
     /// </summary>
     /// <param name="instigator">This is the gameObject that has called this event</param>
-    /// <param name="delta">The difference in health to be applied, should be negative number if you want to apply damage</param>
+    /// <param name="delta">The difference in health to be applied, should be negative number if you want to apply damage, default value is 1</param>
     /// <returns>Returns true if there was a change in the health of the player</returns>
-    public bool ApplyHealthChange(GameObject instigator, float delta)
+    public bool ApplyHealthChange(GameObject instigator, float delta = 1)
     {
         float oldHealth = currentHealth;
 
@@ -64,7 +64,7 @@ public class HealthComponent : MonoBehaviour
     /// <summary>
     /// Gets the player of the health
     /// </summary>
-    /// <returns>Flaot value of the gameObject's health</returns>
+    /// <returns>Float value of the gameObject's health</returns>
     public float GetHealth()
     {
         return currentHealth;

@@ -28,7 +28,8 @@ public class PlayerScript : MonoBehaviour
     private HealthComponent _healthComp;
 
     private bool flipped;
-    
+
+    private float inputStrength;
     private float fJumpPressedRemember;
     private float fGroundedRemember;
 
@@ -36,9 +37,10 @@ public class PlayerScript : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
+
         /*
-        forwardTouchPosition = GameObject.FindWithTag("ForwardButton").transform.position;
-        backwardTouchPosition = GameObject.FindWithTag("BackwardsButton").transform.position;
+        forwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("ForwardButton").transform.position);
+        backwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("BackwardsButton").transform.position);
         */
     }
 
@@ -89,20 +91,23 @@ public class PlayerScript : MonoBehaviour
         }
             
         float fHorizontalVelocity = _rb.velocity.x;
-        float inputStrength = Input.GetAxisRaw("Horizontal");
+
+        //inputStrength = Input.GetAxisRaw("Horizontal");
         
         if (Input.touchCount > 0)
         {
+            /*
             for (int i = 0; i < Input.touchCount; ++i)
             {
                 currentTouch = Input.GetTouch(i);
-
+                
                 if (currentTouch.position == forwardTouchPosition)
                     inputStrength = 1;
                 else if (currentTouch.position == backwardTouchPosition)
                     inputStrength = -1;
                 else inputStrength = 0;
             }
+            */
         }
         
         fHorizontalVelocity += inputStrength * fHorizontalAcceleration;
@@ -130,6 +135,12 @@ public class PlayerScript : MonoBehaviour
     {
         // @TODO: Implement event to flash the player when he has been damaged and stuff
         Debug.Log($"Health has been changed. New Health is {currentHealth}");
+
+        if (currentHealth == 0)
+        {
+            StopPlayerInPlace();
+            this.enabled = false;
+        }
     }
     
     private void AnimateCharacter(float inputStrength)
@@ -165,5 +176,25 @@ public class PlayerScript : MonoBehaviour
     public void JumpFromButton()
     {
         fJumpPressedRemember = fJumpPressedRememberTime;
+    }
+
+    public void JumpButtonReleased()
+    {
+        if (_rb.velocity.y > 0)
+        {
+            var velocity = _rb.velocity;
+            velocity = new Vector2(velocity.x, velocity.y * fJumpCutHeight);
+            _rb.velocity = velocity;
+        }
+    }
+
+    public void SetInputStrength(float value)
+    {
+        inputStrength = value;
+    }
+
+    public void ResetInputStrength()
+    {
+        inputStrength = 0.0f;
     }
 }
