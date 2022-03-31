@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
 public class PlayerScript : MonoBehaviour
 {
+    public delegate void OnPlayerDead(GameObject player);
+    public OnPlayerDead onPlayerDead;
+
     [SerializeField] private LayerMask lmWalls;
     [Header("Movement Variables")]
     [SerializeField] private float fJumpVelocity = 14f;
@@ -22,10 +25,12 @@ public class PlayerScript : MonoBehaviour
     
     [SerializeField] private float fMaxSpeed = 4f;
 
+    private bool dead = false;
     private Touch currentTouch;
 
     private Rigidbody2D _rb;
     private HealthComponent _healthComp;
+    private SpriteRenderer _sr;
 
     private bool flipped;
 
@@ -37,7 +42,7 @@ public class PlayerScript : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
-
+        _sr = GetComponentInChildren<SpriteRenderer>();
         /*
         forwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("ForwardButton").transform.position);
         backwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("BackwardsButton").transform.position);
@@ -56,7 +61,15 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
-        ProcessMovement();
+        if (!dead)
+        {
+            ProcessMovement();
+        }
+        else
+        {
+            float progress = _sr.material.GetFloat("_Fade") - Time.deltaTime;
+            _sr.material.SetFloat("_Fade", progress);
+        }
     }
     
     private void ProcessMovement()
@@ -138,8 +151,9 @@ public class PlayerScript : MonoBehaviour
 
         if (currentHealth == 0)
         {
+            onPlayerDead(this.gameObject);
             StopPlayerInPlace();
-            this.enabled = false;
+            dead = true;
         }
     }
     
