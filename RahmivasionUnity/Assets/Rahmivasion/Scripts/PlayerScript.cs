@@ -151,7 +151,7 @@ public class PlayerScript : MonoBehaviour
 
         if (currentHealth == 0)
         {
-            onPlayerDead(this.gameObject);
+            //onPlayerDead(this.gameObject);
             StopPlayerInPlace();
             dead = true;
         }
