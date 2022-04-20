@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
@@ -20,9 +21,6 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] [Range(0, 1)] private float fHorizontalDampingWhenTurning = 0.5f;
     [SerializeField] [Range(0, 1)] private float fJumpCutHeight = 0.5f;
 
-    [SerializeField] private Vector2 forwardTouchPosition;
-    [SerializeField] private Vector2 backwardTouchPosition;
-    
     [SerializeField] private float fMaxSpeed = 4f;
 
     private bool dead = false;
@@ -37,6 +35,8 @@ public class PlayerScript : MonoBehaviour
     private float inputStrength;
     private float fJumpPressedRemember;
     private float fGroundedRemember;
+    private static readonly int Fade = Shader.PropertyToID("_Fade");
+    private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
 
     void Awake()
     {
@@ -67,8 +67,8 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            float progress = _sr.material.GetFloat("_Fade") - Time.deltaTime;
-            _sr.material.SetFloat("_Fade", progress);
+            float progress = _sr.material.GetFloat(Fade) - Time.deltaTime;
+            _sr.material.SetFloat(Fade, progress);
         }
     }
     
@@ -123,7 +123,7 @@ public class PlayerScript : MonoBehaviour
             */
         }
         
-        fHorizontalVelocity += inputStrength * fHorizontalAcceleration;
+        fHorizontalVelocity += inputStrength * fHorizontalAcceleration * Time.deltaTime;
     
         if (Math.Abs(Input.GetAxisRaw("Horizontal")) < 0.01f)
             fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenStopping, Time.deltaTime * 10f);
@@ -134,7 +134,7 @@ public class PlayerScript : MonoBehaviour
 
         fHorizontalVelocity = Mathf.Clamp(fHorizontalVelocity, -fMaxSpeed, fMaxSpeed);
     
-        AnimateCharacter(inputStrength);
+        AnimateCharacter();
             
         _rb.velocity = new Vector2(fHorizontalVelocity, _rb.velocity.y);
     
@@ -149,6 +149,11 @@ public class PlayerScript : MonoBehaviour
         // @TODO: Implement event to flash the player when he has been damaged and stuff
         Debug.Log($"Health has been changed. New Health is {currentHealth}");
 
+        if (actualDelta < 0)
+        {
+            StartCoroutine(HitFlashEffect());
+        }
+
         if (currentHealth == 0)
         {
             //onPlayerDead(this.gameObject);
@@ -157,7 +162,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
     
-    private void AnimateCharacter(float inputStrength)
+    private void AnimateCharacter()
     {
         if (inputStrength < -0.01f)
         {
@@ -210,5 +215,26 @@ public class PlayerScript : MonoBehaviour
     public void ResetInputStrength()
     {
         inputStrength = 0.0f;
+    }
+
+    IEnumerator HitFlashEffect()
+    {
+        float value = _sr.material.GetFloat(HitFlash);
+
+        while (value < 1)
+        {
+            value += Time.deltaTime * 7f;
+            _sr.material.SetFloat(HitFlash, value);
+            yield return null;
+        }
+
+        while (value > 0)
+        {
+            value -= Time.deltaTime * 7f;
+            _sr.material.SetFloat(HitFlash, value);
+            yield return null;
+        }
+        
+        yield return null;
     }
 }
