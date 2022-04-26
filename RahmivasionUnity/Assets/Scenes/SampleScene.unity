@@ -454,6 +454,10 @@ PrefabInstance:
       value: 868043377
       objectReference: {fileID: 0}
     - target: {fileID: 4010715787490464916, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
+      propertyPath: autoRun
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4010715787490464916, guid: 8ea955f7e783d9b49a37184461abb1ca, type: 3}
       propertyPath: fHorizontalAcceleration
       value: 45
       objectReference: {fileID: 0}

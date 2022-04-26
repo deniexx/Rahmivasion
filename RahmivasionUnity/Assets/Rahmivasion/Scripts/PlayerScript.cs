@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using Cinemachine.Utility;
 using UnityEngine;
+using static UnityEditor.Playables.Utility;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
 public class PlayerScript : MonoBehaviour
@@ -23,12 +25,31 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private float fMaxSpeed = 4f;
 
+    [SerializeField] private bool autoRun = false; 
+
     private bool dead = false;
     private Touch currentTouch;
 
     private Rigidbody2D _rb;
     private HealthComponent _healthComp;
     private SpriteRenderer _sr;
+
+    // Starting of touch stuff
+    Vector2 startTouchPos;
+    Vector2 endTouchPos;
+
+    DateTime touchStartTime;
+
+    DateTime touchEndTime;
+
+    bool touchStarted = false;
+
+    [SerializeField] float swipeTimeThreshold = 0.1f;
+    [SerializeField] float swipeLengthThreshold = 0.1f;
+
+    private float autoRunStrength = 1;
+
+    // Ending of touch stuff
 
     private bool flipped;
 
@@ -94,8 +115,9 @@ public class PlayerScript : MonoBehaviour
                 _rb.velocity = velocity;
             }
         }
-               
-    
+
+        if (autoRun) inputStrength = autoRunStrength;
+        
         if ((fJumpPressedRemember > 0) && (fGroundedRemember > 0))
         {
             fJumpPressedRemember = 0;
@@ -105,23 +127,9 @@ public class PlayerScript : MonoBehaviour
             
         float fHorizontalVelocity = _rb.velocity.x;
 
-        //inputStrength = Input.GetAxisRaw("Horizontal");
+        ProcessSwipes();
         
-        if (Input.touchCount > 0)
-        {
-            /*
-            for (int i = 0; i < Input.touchCount; ++i)
-            {
-                currentTouch = Input.GetTouch(i);
-                
-                if (currentTouch.position == forwardTouchPosition)
-                    inputStrength = 1;
-                else if (currentTouch.position == backwardTouchPosition)
-                    inputStrength = -1;
-                else inputStrength = 0;
-            }
-            */
-        }
+        //inputStrength = Input.GetAxisRaw("Horizontal");
         
         fHorizontalVelocity += inputStrength * fHorizontalAcceleration * Time.deltaTime;
     
@@ -141,6 +149,73 @@ public class PlayerScript : MonoBehaviour
         if (Mathf.Abs(_rb.velocity.x) < 0.05)
         {
             _rb.velocity = new Vector2(0.0f, _rb.velocity.y);
+        }
+    }
+
+    private void ProcessSwipes()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            startTouchPos = Input.mousePosition;
+            endTouchPos = Input.mousePosition;
+            touchStartTime = DateTime.Now;
+            touchStarted = true;
+        }
+
+        if (Input.GetMouseButtonUp(0) && touchStarted)
+        {
+            endTouchPos = Input.mousePosition;
+            touchEndTime = DateTime.Now;
+            CheckSwipe();
+        }
+
+
+        if (Input.touchCount > 0)
+        {
+            foreach (Touch touch in Input.touches)
+            {
+                if (touch.phase == TouchPhase.Began)
+                {
+                    startTouchPos = touch.position;
+                    endTouchPos = touch.position;
+                    touchStartTime = DateTime.Now;
+                    touchStarted = true;
+                }
+
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    endTouchPos = touch.position;
+                    touchEndTime = DateTime.Now;
+                    CheckSwipe();
+                }
+            }
+        }
+    }
+
+    private void CheckSwipe()
+    {
+        float duration = (float)touchEndTime.Subtract(touchStartTime).TotalSeconds;
+
+        Vector2 direction = endTouchPos - startTouchPos;
+
+        if (duration < swipeTimeThreshold) return;
+        if (direction.magnitude < swipeLengthThreshold) return;
+
+        if (direction.x < -100)
+        {
+            autoRunStrength = -1;
+        }
+        else if (direction.x > 100)
+        {
+            autoRunStrength = 1;
+        }
+        if (direction.y < -100)
+        {
+            autoRunStrength = 0;
+        }
+        else if (direction.y > 100)
+        {
+            JumpFromButton();
         }
     }
 
