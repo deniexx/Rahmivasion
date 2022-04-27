@@ -25,8 +25,6 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private float fMaxSpeed = 4f;
 
-    [SerializeField] private bool autoRun = false; 
-
     private bool dead = false;
     private Touch currentTouch;
 
@@ -34,7 +32,7 @@ public class PlayerScript : MonoBehaviour
     private HealthComponent _healthComp;
     private SpriteRenderer _sr;
 
-    // Starting of touch stuff
+    // Start of touch stuff
     Vector2 startTouchPos;
     Vector2 endTouchPos;
 
@@ -44,10 +42,12 @@ public class PlayerScript : MonoBehaviour
 
     bool touchStarted = false;
 
+    [Header("Swiping Controls")]
     [SerializeField] float swipeTimeThreshold = 0.1f;
     [SerializeField] float swipeLengthThreshold = 0.1f;
+    [SerializeField] private bool isUsingSwipe = false;
 
-    private float autoRunStrength = 1;
+    private float autoRunStrength = 0;
 
     // Ending of touch stuff
 
@@ -64,6 +64,7 @@ public class PlayerScript : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
         _sr = GetComponentInChildren<SpriteRenderer>();
+        isUsingSwipe = GameManager.GetIsUsingSwipeInput();
         /*
         forwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("ForwardButton").transform.position);
         backwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("BackwardsButton").transform.position);
@@ -116,7 +117,7 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
-        if (autoRun) inputStrength = autoRunStrength;
+        if (isUsingSwipe) inputStrength = autoRunStrength;
         
         if ((fJumpPressedRemember > 0) && (fGroundedRemember > 0))
         {
