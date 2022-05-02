@@ -5,16 +5,24 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     private static bool isUsingSwipeInput = true;
     
+    public GameManager GetInstance()
+    {
+        return instance;
+    }
+    
     // Start is called before the first frame update
     void Awake()
     {
-        if (instance != null || FindObjectOfType<GameManager>())
+        if (instance != null)
         {
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
-
-        instance = this;
-        DontDestroyOnLoad(gameObject);
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
     }
 
     public void SetIsUsingSwipeInput(bool isUsingSwipe)
