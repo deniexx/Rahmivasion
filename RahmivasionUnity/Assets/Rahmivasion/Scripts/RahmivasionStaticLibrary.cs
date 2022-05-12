@@ -9,7 +9,11 @@ public class RahmivasionStaticLibrary : MonoBehaviour
     /// <returns>The gameObject's healthComponent</returns>
     public static HealthComponent GetHealthComponent(GameObject gameObject)
     {
-        return gameObject.GetComponent<HealthComponent>();
+        HealthComponent healthComp = gameObject.GetComponent<HealthComponent>();
+        if (healthComp)
+            return healthComp;
+
+        return null;
     }
     
     /// <summary>

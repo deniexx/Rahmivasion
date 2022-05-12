@@ -28,8 +28,8 @@ public class HealthComponent : MonoBehaviour
 
         currentHealth = Mathf.Clamp(currentHealth + delta, 0.0f, maxHealth);
         float actualDelta = currentHealth - oldHealth;
-
-        onGameObjectDamagedDelegate(instigator, this, currentHealth, actualDelta);
+        
+        onGameObjectDamagedDelegate?.Invoke(instigator, this, currentHealth, actualDelta);
 
         return actualDelta != 0;
     }

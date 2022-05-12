@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -23,6 +24,7 @@ public class EnemyMain : MonoBehaviour
 
     private Rigidbody2D _rb;
     private GameObject _player;
+    private HealthComponent _hp;
 
     [SerializeField] private EnemyType enemyType;
     [SerializeField] private float fHorizontalAcceleration = 2.0f;
@@ -30,10 +32,30 @@ public class EnemyMain : MonoBehaviour
 
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _player = FindObjectOfType<PlayerScript>().gameObject;
-        _rb = GetComponent<Rigidbody2D>();       
+        _rb = GetComponent<Rigidbody2D>();
+        _hp = GetComponent<HealthComponent>();
+    }
+
+    private void OnEnable()
+    {
+        _hp.onGameObjectDamagedDelegate += OnGameObjectDamaged;
+    }
+
+    private void OnDisable()
+    {
+        _hp.onGameObjectDamagedDelegate -= OnGameObjectDamaged;
+    }
+
+    private void OnGameObjectDamaged(GameObject instigator, HealthComponent healthcomp, float currenthealth, float actualdelta)
+    {
+        if (currenthealth <= 0)
+        {
+            Debug.Log("Killed!");
+            Destroy(gameObject, 0.25f);
+        }
     }
 
     // Update is called once per frame

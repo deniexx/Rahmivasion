@@ -31,6 +31,7 @@ public class PlayerScript : MonoBehaviour
     private Rigidbody2D _rb;
     private HealthComponent _healthComp;
     private SpriteRenderer _sr;
+    private PlayerCombat _pc;
 
     // Start of touch stuff
     Vector2 startTouchPos;
@@ -64,7 +65,10 @@ public class PlayerScript : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
         _sr = GetComponentInChildren<SpriteRenderer>();
+        _pc = GetComponentInChildren<PlayerCombat>();
         isUsingSwipe = GameManager.GetIsUsingSwipeInput();
+        
+        Physics2D.IgnoreCollision(_pc.weapon.GetComponentInChildren<Collider2D>(), GetComponent<Collider2D>());
         /*
         forwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("ForwardButton").transform.position);
         backwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("BackwardsButton").transform.position);
@@ -86,6 +90,7 @@ public class PlayerScript : MonoBehaviour
         if (!dead)
         {
             ProcessMovement();
+            if (Input.GetKeyDown(KeyCode.F)) _pc.Attack();
         }
         else
         {
