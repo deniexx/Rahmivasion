@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Bounder.Framework;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
