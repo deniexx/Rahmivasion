@@ -92,8 +92,8 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            float progress = _sr.material.GetFloat(Fade) - Time.deltaTime;
-            _sr.material.SetFloat(Fade, progress);
+            float progress = _sr.sharedMaterial.GetFloat(Fade) - Time.deltaTime;
+            _sr.sharedMaterial.SetFloat(Fade, progress);
         }
     }
     
@@ -295,20 +295,20 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator HitFlashEffect()
     {
-        float value = _sr.material.GetFloat(HitFlash);
+        float value = _sr.sharedMaterial.GetFloat(HitFlash);
         _healthComp.SetCanTakeDamage(false);
 
         while (value < 1)
         {
             value += Time.deltaTime * 7f;
-            _sr.material.SetFloat(HitFlash, value);
+            _sr.sharedMaterial.SetFloat(HitFlash, value);
             yield return null;
         }
 
         while (value > 0)
         {
             value -= Time.deltaTime * 7f;
-            _sr.material.SetFloat(HitFlash, value);
+            _sr.sharedMaterial.SetFloat(HitFlash, value);
             yield return null;
         }
 
