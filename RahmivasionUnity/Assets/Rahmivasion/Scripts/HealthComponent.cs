@@ -1,14 +1,16 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Rendering;
 
 public class HealthComponent : MonoBehaviour
 {
-    public delegate void OnGameObjectDamagedDelegate(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta);
-    public OnGameObjectDamagedDelegate onGameObjectDamagedDelegate;
+    public UnityEvent<GameObject, HealthComponent, float, float> OnGameObjectDamaged;
 
     [Header("Health Variables")]
     [SerializeField] private float baseHealth = 6.0f;
     [SerializeField] private float maxHealth = 6.0f;
-
+    private bool canTakeDamage = true;
+    
     private float currentHealth = 0.0f;
 
     private void Start()
@@ -24,14 +26,30 @@ public class HealthComponent : MonoBehaviour
     /// <returns>Returns true if there was a change in the health of the player</returns>
     public bool ApplyHealthChange(GameObject instigator, float delta = 1)
     {
+
         float oldHealth = currentHealth;
 
         currentHealth = Mathf.Clamp(currentHealth + delta, 0.0f, maxHealth);
+        if (!canTakeDamage && currentHealth - oldHealth < 0)
+        {
+            currentHealth = oldHealth;
+            return false;
+        }
+        
         float actualDelta = currentHealth - oldHealth;
         
-        onGameObjectDamagedDelegate?.Invoke(instigator, this, currentHealth, actualDelta);
+        OnGameObjectDamaged?.Invoke(instigator, this, currentHealth, actualDelta);
 
         return actualDelta != 0;
+    }
+
+    /// <summary>
+    /// Sets the can take damage variable
+    /// </summary>
+    /// <param name="newValue">Can be TRUE or FALSE, whether the player can take damage or not</param>
+    public void SetCanTakeDamage(bool newValue)
+    {
+        canTakeDamage = newValue;
     }
 
     /// <summary>

@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
-using Cinemachine.Utility;
 using UnityEngine;
-using static UnityEditor.Playables.Utility;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
 public class PlayerScript : MonoBehaviour
 {
-    public delegate void OnPlayerDead(GameObject player);
-    public OnPlayerDead onPlayerDead;
-
+    private UnityEvent<GameObject> OnPlayerDead;
+    
     [SerializeField] private LayerMask lmWalls;
     [Header("Movement Variables")]
     [SerializeField] private float fJumpVelocity = 14f;
@@ -77,12 +75,12 @@ public class PlayerScript : MonoBehaviour
 
     private void OnEnable()
     {
-        _healthComp.onGameObjectDamagedDelegate += OnHealthChanged;
+        _healthComp.OnGameObjectDamaged.AddListener(OnHealthChanged);
     }
 
     private void OnDisable()
     {
-        _healthComp.onGameObjectDamagedDelegate -= OnHealthChanged;
+        _healthComp.OnGameObjectDamaged.RemoveListener(OnHealthChanged);
     }
 
     void Update()
@@ -227,9 +225,6 @@ public class PlayerScript : MonoBehaviour
 
     private void OnHealthChanged(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta)
     {
-        // @TODO: Implement event to flash the player when he has been damaged and stuff
-        Debug.Log($"Health has been changed. New Health is {currentHealth}");
-
         if (actualDelta < 0)
         {
             StartCoroutine(HitFlashEffect());
@@ -237,7 +232,7 @@ public class PlayerScript : MonoBehaviour
 
         if (currentHealth == 0)
         {
-            //onPlayerDead(this.gameObject);
+            OnPlayerDead?.Invoke(this.gameObject);
             StopPlayerInPlace();
             dead = true;
         }
@@ -301,6 +296,7 @@ public class PlayerScript : MonoBehaviour
     IEnumerator HitFlashEffect()
     {
         float value = _sr.material.GetFloat(HitFlash);
+        _healthComp.SetCanTakeDamage(false);
 
         while (value < 1)
         {
@@ -315,6 +311,8 @@ public class PlayerScript : MonoBehaviour
             _sr.material.SetFloat(HitFlash, value);
             yield return null;
         }
+
+        _healthComp.SetCanTakeDamage(true);
         
         yield return null;
     }
