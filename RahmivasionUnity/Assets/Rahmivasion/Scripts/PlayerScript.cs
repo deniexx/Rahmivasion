@@ -15,6 +15,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float fGroundedRememberTime = 0.15f;
     [SerializeField] private float fHorizontalAcceleration = 0.25f;
 
+    [Space(20)]
     [Header("Damping and jump cut height")]
     [SerializeField] [Range(0, 1)] private float fHorizontalDampingBasic = 0.5f;
     [SerializeField] [Range(0, 1)] private float fHorizontalDampingWhenStopping = 0.7f;
@@ -27,9 +28,10 @@ public class PlayerScript : MonoBehaviour
     private Touch currentTouch;
 
     private Rigidbody2D _rb;
+    private PlayerCombat _pc;
     private HealthComponent _healthComp;
     private SpriteRenderer _sr;
-    private PlayerCombat _pc;
+    private Animator _animator;
 
     // Start of touch stuff
     Vector2 startTouchPos;
@@ -41,10 +43,23 @@ public class PlayerScript : MonoBehaviour
 
     bool touchStarted = false;
 
+    [Space(20)]
     [Header("Swiping Controls")]
     [SerializeField] float swipeTimeThreshold = 0.1f;
     [SerializeField] float swipeLengthThreshold = 0.1f;
     [SerializeField] private bool isUsingSwipe = false;
+    
+    [Space(20)]
+    [Header("Combat")]
+    [SerializeField] private int damage = 3;
+    [SerializeField] private float defaultAttackCooldown = 0.75f;
+    [SerializeField] private float invulnerabilityDuration = 2.0f;
+    [SerializeField] private Collider2D col;
+    private float invulnerabilityTimer;
+
+    private float attackCooldown = 0.0f;
+    
+    private static readonly int Attack = Animator.StringToHash("_Attack");
 
     private float autoRunStrength = 0;
 
@@ -57,6 +72,7 @@ public class PlayerScript : MonoBehaviour
     private float fGroundedRemember;
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
+    private static readonly int HorizontalVelocity = Animator.StringToHash("_HorizontalVelocity");
 
     void Awake()
     {
@@ -64,13 +80,18 @@ public class PlayerScript : MonoBehaviour
         _healthComp = RahmivasionStaticLibrary.GetHealthComponent(this.gameObject);
         _sr = GetComponentInChildren<SpriteRenderer>();
         _pc = GetComponentInChildren<PlayerCombat>();
-        isUsingSwipe = GameManager.GetIsUsingSwipeInput();
+        _animator = GetComponent<Animator>();
+        isUsingSwipe = GameManager.GetInstance().GetIsUsingSwipeInput();
         
-        Physics2D.IgnoreCollision(_pc.weapon.GetComponentInChildren<Collider2D>(), GetComponent<Collider2D>());
-        /*
-        forwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("ForwardButton").transform.position);
-        backwardTouchPosition = Camera.main.WorldToScreenPoint(GameObject.FindWithTag("BackwardsButton").transform.position);
-        */
+        col.enabled = false;
+        
+        Physics2D.IgnoreCollision(col, GetComponent<Collider2D>());
+    }
+
+    private void Start()
+    {
+        _pc.damage = damage;
+        StartCoroutine(MakeVisible(1));
     }
 
     private void OnEnable()
@@ -88,13 +109,28 @@ public class PlayerScript : MonoBehaviour
         if (!dead)
         {
             ProcessMovement();
-            if (Input.GetKeyDown(KeyCode.F)) _pc.Attack();
+            if (Input.GetKeyDown(KeyCode.F)) TryAttack();
+            
+            if (attackCooldown > 0.0f)
+            {
+                attackCooldown -= Time.deltaTime;
+            }
+
+            if (invulnerabilityTimer > 0.0f)
+            {
+                invulnerabilityTimer -= Time.deltaTime;
+                if (invulnerabilityTimer <= 0.0f) _healthComp.SetCanTakeDamage(true);
+            }
         }
-        else
-        {
-            float progress = _sr.sharedMaterial.GetFloat(Fade) - Time.deltaTime;
-            _sr.sharedMaterial.SetFloat(Fade, progress);
-        }
+    }
+    
+    public void TryAttack()
+    {
+        if (attackCooldown > 0.0f) return;
+        
+        attackCooldown = defaultAttackCooldown;
+        _animator.SetTrigger(Attack);
+        
     }
     
     private void ProcessMovement()
@@ -149,6 +185,7 @@ public class PlayerScript : MonoBehaviour
         AnimateCharacter();
             
         _rb.velocity = new Vector2(fHorizontalVelocity, _rb.velocity.y);
+        _animator.SetFloat(HorizontalVelocity, Mathf.Abs(_rb.velocity.x));
     
         if (Mathf.Abs(_rb.velocity.x) < 0.05)
         {
@@ -235,6 +272,7 @@ public class PlayerScript : MonoBehaviour
             OnPlayerDead?.Invoke(this.gameObject);
             StopPlayerInPlace();
             dead = true;
+            StartCoroutine(MakeVisible(-1));
         }
     }
     
@@ -293,10 +331,37 @@ public class PlayerScript : MonoBehaviour
         inputStrength = 0.0f;
     }
 
+    IEnumerator MakeVisible(int dir)
+    {
+        float progress = dir > 0 ? 0.0f : 1.0f;
+        if (dir > 0)
+        {
+            while (progress < 1.0f)
+            {
+                progress = _sr.sharedMaterial.GetFloat(Fade) + (Time.deltaTime * dir);
+                _sr.sharedMaterial.SetFloat(Fade, progress);
+                yield return null;
+            }
+        }
+
+        else
+        {
+            while (progress > 0.0f)
+            {
+                progress = _sr.sharedMaterial.GetFloat(Fade) + (Time.deltaTime * dir * 0.5f);
+                _sr.sharedMaterial.SetFloat(Fade, progress);
+                yield return null;
+            }
+        }
+        
+        yield return null;
+    }
+
     IEnumerator HitFlashEffect()
     {
         float value = _sr.sharedMaterial.GetFloat(HitFlash);
         _healthComp.SetCanTakeDamage(false);
+        invulnerabilityTimer = invulnerabilityDuration;
 
         while (value < 1)
         {
@@ -312,8 +377,8 @@ public class PlayerScript : MonoBehaviour
             yield return null;
         }
 
-        _healthComp.SetCanTakeDamage(true);
-        
+        yield return new WaitForSeconds(0.5f);
+
         yield return null;
     }
 }

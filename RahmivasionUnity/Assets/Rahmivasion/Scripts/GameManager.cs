@@ -3,9 +3,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    private static bool isUsingSwipeInput = true;
+    [SerializeField] private bool isUsingSwipeInput = true;
     
-    public GameManager GetInstance()
+    public static GameManager GetInstance()
     {
         return instance;
     }
@@ -25,12 +25,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SetIsUsingSwipeInput(bool isUsingSwipe)
+    public void SetIsUsingSwipeInput()
     {
-        isUsingSwipeInput = isUsingSwipe;
+        isUsingSwipeInput = !isUsingSwipeInput;
     }
 
-    public static bool GetIsUsingSwipeInput()
+    public bool GetIsUsingSwipeInput()
     {
         return isUsingSwipeInput;
     }

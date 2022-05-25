@@ -30,15 +30,24 @@ public class EnemyMain : MonoBehaviour
     private HealthComponent _hp;
     private SpriteRenderer _sr;
     private bool dying;
-
+    
     [SerializeField] private EnemyType enemyType;
-    [SerializeField] private float fHorizontalAcceleration = 2.0f;
+    [SerializeField] private float fHorizontalAcceleration = 0.5f;
     [SerializeField] private float fMaximumSpeed = 4.0f;
+    [SerializeField] private Collider2D col;
+    
+    [ShowOnEnum("enemyType", (int)EnemyType.Bouncer)]
     [SerializeField] private EnemyTypeStats bouncer;
+    
+    [ShowOnEnum("enemyType", (int)EnemyType.Speedy)]
     [SerializeField] private EnemyTypeStats speedy;
+    
+    [ShowOnEnum("enemyType", (int)EnemyType.BigBoy)]
     [SerializeField] private EnemyTypeStats bigBoy;
 
     private EnemyTypeStats stats;
+    private float tookDamageTimer;
+    private float tookDamageDuration = 1.0f;
     
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
@@ -51,6 +60,21 @@ public class EnemyMain : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _hp = GetComponent<HealthComponent>();
         _sr = GetComponent<SpriteRenderer>();
+        Physics2D.IgnoreCollision(col, _player.GetComponent<Collider2D>());
+        
+        
+        switch (enemyType)
+        {
+            case EnemyType.Bouncer:
+                stats = bouncer;
+                break;
+            case EnemyType.Speedy:
+                stats = speedy;
+                break;
+            case EnemyType.BigBoy:
+                stats = bigBoy;
+                break;
+        }
     }
 
     private void OnEnable()
@@ -66,8 +90,11 @@ public class EnemyMain : MonoBehaviour
     private void OnGameObjectDamaged(GameObject instigator, HealthComponent healthcomp, float currenthealth, float actualdelta)
     {
         if (actualdelta < 0)
+        {
+            _rb.velocity = new Vector2(-_rb.velocity.x, 15);
             StartCoroutine(HitFlashEffect());
-        
+        }
+
         if (currenthealth <= 0)
         {
             dying = true;
@@ -86,16 +113,22 @@ public class EnemyMain : MonoBehaviour
             if (progress == 0)
                 Destroy(gameObject);
         }
+        
+        
+        if (tookDamageTimer > 0)
+        {
+            tookDamageTimer -= Time.deltaTime;
+        }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (dying) return;
-        
+        if (dying || tookDamageTimer > 0) return;
+
         float xVel = transform.position.x > _player.transform.position.x ? -fHorizontalAcceleration : fHorizontalAcceleration;
 
-        xVel = Mathf.Clamp(xVel, -fMaximumSpeed, fMaximumSpeed);
+        xVel = Mathf.Clamp(xVel + _rb.velocity.x, -fMaximumSpeed, fMaximumSpeed);
         Vector2 newVelocity = new Vector2(xVel, _rb.velocity.y);
         _rb.velocity = newVelocity;
     }
@@ -113,6 +146,7 @@ public class EnemyMain : MonoBehaviour
     {
         float value = _sr.material.GetFloat(HitFlash);
         _hp.SetCanTakeDamage(false);
+        tookDamageTimer = tookDamageDuration;
         
         while (value < 1)
         {

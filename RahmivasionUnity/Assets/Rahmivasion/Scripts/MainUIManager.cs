@@ -10,7 +10,7 @@ public class MainUIManager : MonoBehaviour
 
     void Start()
     {
-        if (GameManager.GetIsUsingSwipeInput())
+        if (GameManager.GetInstance().GetIsUsingSwipeInput())
         {
             Destroy(forwardButton.gameObject);
             Destroy(backButton.gameObject);
