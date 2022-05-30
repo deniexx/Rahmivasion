@@ -58,8 +58,6 @@ public class PlayerScript : MonoBehaviour
     private float invulnerabilityTimer;
 
     private float attackCooldown = 0.0f;
-    
-    private static readonly int Attack = Animator.StringToHash("_Attack");
 
     private float autoRunStrength = 0;
 
@@ -73,6 +71,8 @@ public class PlayerScript : MonoBehaviour
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
     private static readonly int HorizontalVelocity = Animator.StringToHash("_HorizontalVelocity");
+    private static readonly int Attack = Animator.StringToHash("_Attack");
+    private static readonly int Jump = Animator.StringToHash("_Jump");
 
     void Awake()
     {
@@ -308,6 +308,7 @@ public class PlayerScript : MonoBehaviour
     // Input from the on screen buttons
     public void JumpFromButton()
     {
+        _animator.SetTrigger(Jump);
         fJumpPressedRemember = fJumpPressedRememberTime;
     }
 
