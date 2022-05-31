@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(BoxCollider2D))]
 public class PassiveDamageComponent : MonoBehaviour
 {
     [SerializeField] private float DamageToApply = -20.0f;

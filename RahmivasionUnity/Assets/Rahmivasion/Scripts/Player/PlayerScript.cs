@@ -65,6 +65,8 @@ public class PlayerScript : MonoBehaviour
 
     private bool flipped;
 
+    private bool frozen;
+
     private float inputStrength;
     private float fJumpPressedRemember;
     private float fGroundedRemember;
@@ -135,6 +137,8 @@ public class PlayerScript : MonoBehaviour
     
     private void ProcessMovement()
     {
+        if (frozen) return;
+
         var pTransform = transform;
         Vector2 v2GroundedBoxCheckPosition = (Vector2) pTransform.position + new Vector2(0, -0.5f);
         Vector2 v2GroundedBoxCheckScale = (Vector2) pTransform.localScale + new Vector2(-0.02f, 0);
@@ -330,6 +334,19 @@ public class PlayerScript : MonoBehaviour
     public void ResetInputStrength()
     {
         inputStrength = 0.0f;
+    }
+
+    public void SetFrozen(bool newState)
+    {
+        if (newState == true)
+        {
+            _rb.velocity = Vector2.zero;
+            frozen = true;
+        }
+        else
+        {
+            frozen = false;    
+        }
     }
 
     IEnumerator MakeVisible(int dir)
