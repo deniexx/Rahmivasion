@@ -29,6 +29,7 @@ public class EnemyMain : MonoBehaviour
     private GameObject _player;
     private HealthComponent _hp;
     private SpriteRenderer _sr;
+    private MaterialPropertyBlock _mpb;
     private bool dying;
     
     [SerializeField] private EnemyType enemyType;
@@ -48,7 +49,7 @@ public class EnemyMain : MonoBehaviour
     private EnemyTypeStats stats;
     private float tookDamageTimer;
     private float tookDamageDuration = 1.0f;
-    
+    private float progress = 1.0f;
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
 
@@ -60,6 +61,7 @@ public class EnemyMain : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _hp = GetComponent<HealthComponent>();
         _sr = GetComponent<SpriteRenderer>();
+        _mpb = new MaterialPropertyBlock();
         Physics2D.IgnoreCollision(col, _player.GetComponent<Collider2D>());
         
         
@@ -75,6 +77,8 @@ public class EnemyMain : MonoBehaviour
                 stats = bigBoy;
                 break;
         }
+
+        progress = 1;
     }
 
     private void OnEnable()
@@ -107,10 +111,12 @@ public class EnemyMain : MonoBehaviour
     {
         if (dying)
         {
-            float progress = _sr.material.GetFloat(Fade) - Time.deltaTime;
-            _sr.material.SetFloat(Fade, progress);
+            _sr.GetPropertyBlock(_mpb);
+            progress -= Time.deltaTime;
+            _mpb.SetFloat(Fade, progress);
+            _sr.SetPropertyBlock(_mpb, 0);
             
-            if (progress == 0)
+            if (progress <= 0)
                 Destroy(gameObject);
         }
         
