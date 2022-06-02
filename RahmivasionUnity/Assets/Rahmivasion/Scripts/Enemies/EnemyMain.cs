@@ -150,21 +150,26 @@ public class EnemyMain : MonoBehaviour
 
     IEnumerator HitFlashEffect()
     {
-        float value = _sr.material.GetFloat(HitFlash);
+        float value = 0.0f;
         _hp.SetCanTakeDamage(false);
         tookDamageTimer = tookDamageDuration;
+        
         
         while (value < 1)
         {
             value += Time.deltaTime * 7f;
-            _sr.material.SetFloat(HitFlash, value);
+            _sr.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(HitFlash, value);
+            _sr.SetPropertyBlock(_mpb);
             yield return null;
         }
 
         while (value > 0)
         {
             value -= Time.deltaTime * 7f;
-            _sr.material.SetFloat(HitFlash, value);
+            _sr.GetPropertyBlock(_mpb);
+            _mpb.SetFloat(HitFlash, value);
+            _sr.SetPropertyBlock(_mpb);
             yield return null;
         }
         
