@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
+    
     [SerializeField] private bool isUsingSwipeInput = true;
+    private Vector3 checkpointLocation;
     
     public static GameManager GetInstance()
     {
@@ -25,6 +28,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        RSceneManager.GetInstance().AfterLoadSceneCall.AddListener(ResetSpawnCheckpointOnNewLevel);
+    }
+
+    private void ResetSpawnCheckpointOnNewLevel()
+    {
+        checkpointLocation = new Vector3(0, 0, 0);
+    }
+
     public void SetIsUsingSwipeInput()
     {
         isUsingSwipeInput = !isUsingSwipeInput;
@@ -33,5 +46,15 @@ public class GameManager : MonoBehaviour
     public bool GetIsUsingSwipeInput()
     {
         return isUsingSwipeInput;
+    }
+
+    public void SetCheckpointLocation(Vector3 newPosition)
+    {
+        checkpointLocation = newPosition;
+    }
+
+    public void RespawnPlayer(GameObject player)
+    {
+        player.transform.position = checkpointLocation;
     }
 }

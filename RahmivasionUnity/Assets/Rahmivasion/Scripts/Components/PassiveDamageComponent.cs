@@ -1,12 +1,16 @@
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
 public class PassiveDamageComponent : MonoBehaviour
 {
-    [SerializeField] private float DamageToApply = -20.0f;
+    [SerializeField] private float DamageToApply = -3.0f;
+    [SerializeField] private int throwbackX = 5;
+    [SerializeField] private int throwbackY = 5;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D col)
     {
-        RahmivasionStaticLibrary.ApplyGameObjectHealthChange(this.gameObject, collision.gameObject, DamageToApply);
+        RahmivasionStaticLibrary.ApplyGameObjectHealthChange(this.gameObject, col.gameObject, DamageToApply);
+        Rigidbody2D rb = col.gameObject.GetComponent<Rigidbody2D>();
+        if (rb) rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * throwbackX, throwbackY);
     }
 }

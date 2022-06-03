@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
+using TMPro;
+using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(HealthComponent))]
 public class PlayerScript : MonoBehaviour
 {
-    private UnityEvent<GameObject> OnPlayerDead;
+    public UnityEvent<GameObject> OnPlayerDead;
     
     [SerializeField] private LayerMask lmWalls;
     [Header("Movement Variables")]
@@ -49,6 +51,8 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] float swipeLengthThreshold = 0.1f;
     [SerializeField] private bool isUsingSwipe = false;
     
+    // Ending of touch stuff
+    
     [Space(20)]
     [Header("Combat")]
     [SerializeField] private int damage = 3;
@@ -61,9 +65,7 @@ public class PlayerScript : MonoBehaviour
 
     private float autoRunStrength = 0;
 
-    // Ending of touch stuff
-
-    private bool flipped;
+    [SerializeField] private TextMeshProUGUI health;
 
     private bool frozen;
 
@@ -93,6 +95,8 @@ public class PlayerScript : MonoBehaviour
     private void Start()
     {
         _pc.damage = damage;
+        _sr.sharedMaterial.SetFloat(HitFlash, 0);
+        health.text = _healthComp.GetHealth().ToString();
         StartCoroutine(MakeVisible(1));
     }
 
@@ -266,14 +270,15 @@ public class PlayerScript : MonoBehaviour
 
     private void OnHealthChanged(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta)
     {
+        health.text = currentHealth.ToString();
+        
         if (actualDelta < 0)
         {
             StartCoroutine(HitFlashEffect());
         }
-
+        
         if (currentHealth == 0)
         {
-            OnPlayerDead?.Invoke(this.gameObject);
             StopPlayerInPlace();
             dead = true;
             StartCoroutine(MakeVisible(-1));
@@ -295,16 +300,18 @@ public class PlayerScript : MonoBehaviour
     private void Flip(bool flip)
     {
         transform.localScale = flip ? new Vector3(-1.0f, 1.0f, 1.0f) : new Vector3(1.0f, 1.0f, 1.0f);
-
-        flipped = flip;
     }
 
-    public bool GetIsPlayerFlipped()
+    private void ResetPlayer()
     {
-        return flipped;
+        _sr.sharedMaterial.SetFloat(HitFlash, 0);
+        _healthComp.ResetHealth();
+        GameManager.GetInstance().RespawnPlayer(gameObject);
+        StopAllCoroutines();
+        StartCoroutine(MakeVisible(1));
     }
-    
-    public void StopPlayerInPlace()
+
+    private void StopPlayerInPlace()
     {
         _rb.velocity = new Vector2(0.0f, 0.0f);
     }
@@ -352,6 +359,9 @@ public class PlayerScript : MonoBehaviour
     IEnumerator MakeVisible(int dir)
     {
         float progress = dir > 0 ? 0.0f : 1.0f;
+
+        frozen = true;
+        
         if (dir > 0)
         {
             while (progress < 1.0f)
@@ -370,6 +380,14 @@ public class PlayerScript : MonoBehaviour
                 _sr.sharedMaterial.SetFloat(Fade, progress);
                 yield return null;
             }
+            OnPlayerDead?.Invoke(this.gameObject);
+            ResetPlayer();
+        }
+
+        if (progress > 0.5f)
+        {
+            frozen = false;
+            dead = false;
         }
         
         yield return null;

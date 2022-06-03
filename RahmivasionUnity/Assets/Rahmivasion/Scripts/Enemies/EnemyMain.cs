@@ -8,9 +8,9 @@ public class EnemyMain : MonoBehaviour
 {
     public enum EnemyType
     {
-        Bouncer,
         Speedy,
-        BigBoy
+        BigBoy,
+        Regular
     }
 
     // Potentially create different scripts for each enemy type and add them as a component to the thingy
@@ -19,10 +19,7 @@ public class EnemyMain : MonoBehaviour
     {
         public int maximumSpeed;
         public int acceleration;
-        public bool canJump;
-        public int jumpChance;
         public int damage;
-        public int jumpCD;
     }
 
     private Rigidbody2D _rb;
@@ -33,18 +30,16 @@ public class EnemyMain : MonoBehaviour
     private bool dying;
     
     [SerializeField] private EnemyType enemyType;
-    [SerializeField] private float fHorizontalAcceleration = 0.5f;
-    [SerializeField] private float fMaximumSpeed = 4.0f;
     [SerializeField] private Collider2D col;
-    
-    [ShowOnEnum("enemyType", (int)EnemyType.Bouncer)]
-    [SerializeField] private EnemyTypeStats bouncer;
     
     [ShowOnEnum("enemyType", (int)EnemyType.Speedy)]
     [SerializeField] private EnemyTypeStats speedy;
     
     [ShowOnEnum("enemyType", (int)EnemyType.BigBoy)]
     [SerializeField] private EnemyTypeStats bigBoy;
+
+    [ShowOnEnum("enemyType", (int)EnemyType.Regular)]
+    [SerializeField] private EnemyTypeStats regular;
 
     private EnemyTypeStats stats;
     private float tookDamageTimer;
@@ -53,11 +48,14 @@ public class EnemyMain : MonoBehaviour
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
 
+    private bool spriteFlipByDefault = false;
+
     
     // Start is called before the first frame update
     void Awake()
     {
-        _player = FindObjectOfType<PlayerScript>().gameObject;
+        _player = GameObject.FindGameObjectWithTag("Player");
+        
         _rb = GetComponent<Rigidbody2D>();
         _hp = GetComponent<HealthComponent>();
         _sr = GetComponent<SpriteRenderer>();
@@ -67,8 +65,8 @@ public class EnemyMain : MonoBehaviour
         
         switch (enemyType)
         {
-            case EnemyType.Bouncer:
-                stats = bouncer;
+            case EnemyType.Regular:
+                stats = regular;
                 break;
             case EnemyType.Speedy:
                 stats = speedy;
@@ -78,6 +76,7 @@ public class EnemyMain : MonoBehaviour
                 break;
         }
 
+        spriteFlipByDefault = _sr.flipX;
         progress = 1;
     }
 
@@ -132,15 +131,26 @@ public class EnemyMain : MonoBehaviour
     {
         if (dying || tookDamageTimer > 0) return;
 
-        float xVel = transform.position.x > _player.transform.position.x ? -fHorizontalAcceleration : fHorizontalAcceleration;
+        float xVel = transform.position.x > _player.transform.position.x ? -stats.acceleration : stats.acceleration;
 
-        xVel = Mathf.Clamp(xVel + _rb.velocity.x, -fMaximumSpeed, fMaximumSpeed);
+        xVel = Mathf.Clamp(xVel + _rb.velocity.x, -stats.maximumSpeed, stats.maximumSpeed);
         Vector2 newVelocity = new Vector2(xVel, _rb.velocity.y);
         _rb.velocity = newVelocity;
+
+        if (_rb.velocity.x < 1)
+        {
+            _sr.flipX = !spriteFlipByDefault;
+        }
+        else
+        {
+            _sr.flipX = spriteFlipByDefault;
+        }
     }
 
     private void OnTriggerStay2D(Collider2D col)
     {
+        if (!col.CompareTag("Player")) return;
+        
         HealthComponent hp = col.gameObject.GetComponent<HealthComponent>();
         if (hp)
         {

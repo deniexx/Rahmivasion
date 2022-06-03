@@ -26,7 +26,6 @@ public class HealthComponent : MonoBehaviour
     /// <returns>Returns true if there was a change in the health of the player</returns>
     public bool ApplyHealthChange(GameObject instigator, float delta = 1)
     {
-
         float oldHealth = currentHealth;
 
         currentHealth = Mathf.Clamp(currentHealth + delta, 0.0f, maxHealth);
@@ -50,6 +49,14 @@ public class HealthComponent : MonoBehaviour
     public void SetCanTakeDamage(bool newValue)
     {
         canTakeDamage = newValue;
+    }
+
+    /// <summary>
+    /// Resets the current health to be equal to the baseHealth
+    /// </summary>
+    public void ResetHealth()
+    {
+        currentHealth = baseHealth;
     }
 
     /// <summary>
