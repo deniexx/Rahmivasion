@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        
+        checkpointLocation = new Vector3(-10, -1.05f, 0);
     }
 
     private void Start()
@@ -35,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     private void ResetSpawnCheckpointOnNewLevel()
     {
-        checkpointLocation = new Vector3(0, 0, 0);
+        checkpointLocation = new Vector3(-10, -1.05f, 0);
     }
 
     public void SetIsUsingSwipeInput()

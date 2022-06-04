@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(BoxCollider2D))][ExecuteAlways]
@@ -11,7 +12,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private List<Transform> spawnLocations = new List<Transform>();
     [SerializeField] private float timeBetweenSpawns = 5.0f;
     [SerializeField] private List<GameObject> barriers = new List<GameObject>();
-
+    
     private int enemiesKilled = 0;
     private bool activated = false;
     private int index = 0;
@@ -23,6 +24,10 @@ public class Spawner : MonoBehaviour
         activated = false;
         index = 0;
         enemiesKilled = 0;
+        
+        PlayerScript ps = FindObjectOfType<PlayerScript>();
+        ps.ArenaFinished(true);
+        
         foreach (var enemy in enemiesSpawned)
         {
             RahmivasionStaticLibrary.KillGameObject(enemy);
@@ -34,7 +39,9 @@ public class Spawner : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (activated) return;
-        
+
+        PlayerScript ps = FindObjectOfType<PlayerScript>();
+        ps.ArenaStarted();
         activated = true;
         SwitchBarriersState(true);
         StartCoroutine(SpawnEnemies());
@@ -51,6 +58,8 @@ public class Spawner : MonoBehaviour
             if (enemiesKilled == enemiesToSpawn.Count)
             {
                 SwitchBarriersState(false);
+                PlayerScript ps = FindObjectOfType<PlayerScript>();
+                ps.ArenaFinished(true);
             }
         }
     }

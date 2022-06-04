@@ -64,6 +64,27 @@ public class PlayerScript : MonoBehaviour
     private float attackCooldown = 0.0f;
 
     private float autoRunStrength = 0;
+    
+    // Arena variables
+    private float healthOnArenaStart = 0;
+    private float damageTakenWithinArena = 0;
+    private bool inArena = false;
+
+
+    [Space(20)] 
+    [Header("Combat Sounds")]
+    [SerializeField] private AudioClip someDamageTaken; // when the player takes 20% or less of his health as damage
+    [SerializeField] private AudioClip mediumAmountOfDamageTaken; // when the player takes 50% or less of his health as damage
+    [SerializeField] private AudioClip lotsOfDamageTaken; // when the player takes 80% or less of his health as damage
+    [SerializeField] private AudioClip noDamageTaken; // when the player has taken no damage
+    [SerializeField] private AudioClip arenaLost; // when the player has died during the arena
+    // End of arena variables
+
+    [Space(20)] 
+    [Header("Sounds")] 
+    [SerializeField] private AudioSource playerAudioSource;
+    [SerializeField] private AudioClip hit; // Sound to be played when the player has been hit
+    [SerializeField] private AudioClip attack; // Sound for when the player attacks
 
     [SerializeField] private TextMeshProUGUI health;
 
@@ -133,7 +154,8 @@ public class PlayerScript : MonoBehaviour
     public void TryAttack()
     {
         if (attackCooldown > 0.0f) return;
-        
+
+        PlaySoundClip(attack);
         attackCooldown = defaultAttackCooldown;
         _animator.SetTrigger(Attack);
         
@@ -275,6 +297,10 @@ public class PlayerScript : MonoBehaviour
         if (actualDelta < 0)
         {
             StartCoroutine(HitFlashEffect());
+            PlaySoundClip(hit);
+            
+            if (inArena)
+                damageTakenWithinArena += actualDelta;
         }
         
         if (currentHealth == 0)
@@ -316,6 +342,13 @@ public class PlayerScript : MonoBehaviour
         _rb.velocity = new Vector2(0.0f, 0.0f);
     }
 
+    private void PlaySoundClip(AudioClip clip)
+    {
+        playerAudioSource.Stop();
+        playerAudioSource.clip = clip;
+        playerAudioSource.Play();
+    }
+
     // Input from the on screen buttons
     public void JumpFromButton()
     {
@@ -354,6 +387,33 @@ public class PlayerScript : MonoBehaviour
         {
             frozen = false;    
         }
+    }
+
+    public void ArenaStarted()
+    {
+        inArena = true;
+        healthOnArenaStart = _healthComp.GetHealth();
+        damageTakenWithinArena = 0;
+    }
+
+    public void ArenaFinished(bool arenaWon)
+    {
+        if (arenaWon)
+        {
+            float healthDelta = damageTakenWithinArena / healthOnArenaStart;
+            
+            
+            if (healthDelta > 0.79f)
+                PlaySoundClip(lotsOfDamageTaken);
+            else if (healthDelta > 0.49f)
+                PlaySoundClip(mediumAmountOfDamageTaken);
+            else if (healthDelta > 0)
+                PlaySoundClip(someDamageTaken);
+            else
+                PlaySoundClip(noDamageTaken);
+        }
+        else
+            PlaySoundClip(arenaLost);
     }
 
     IEnumerator MakeVisible(int dir)
