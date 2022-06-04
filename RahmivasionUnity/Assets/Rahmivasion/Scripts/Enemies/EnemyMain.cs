@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyMain : MonoBehaviour
 {
-    public enum EnemyType
+    private enum EnemyType
     {
         Speedy,
         BigBoy,
@@ -48,10 +48,9 @@ public class EnemyMain : MonoBehaviour
     private static readonly int Fade = Shader.PropertyToID("_Fade");
     private static readonly int HitFlash = Shader.PropertyToID("_HitFlash");
 
-    private bool spriteFlipByDefault = false;
-
+    private bool spriteFlipByDefault = false; // This is used, because we have some sprites that needed to be flipped by default
     
-    // Start is called before the first frame update
+    // Setting up variables
     void Awake()
     {
         _player = GameObject.FindGameObjectWithTag("Player");
@@ -79,7 +78,7 @@ public class EnemyMain : MonoBehaviour
         spriteFlipByDefault = _sr.flipX;
         progress = 1;
     }
-
+    
     private void OnEnable()
     {
         _hp.OnGameObjectDamaged.AddListener(OnGameObjectDamaged);
@@ -108,6 +107,7 @@ public class EnemyMain : MonoBehaviour
 
     void Update()
     {
+        // If we are dying apply the material property block to the material, to get the fade effect happening, without duplicating the material
         if (dying)
         {
             _sr.GetPropertyBlock(_mpb);
@@ -119,7 +119,7 @@ public class EnemyMain : MonoBehaviour
                 Destroy(gameObject);
         }
         
-        
+        // This timer is used for the bounce back effect, when an enemy has been hit
         if (tookDamageTimer > 0)
         {
             tookDamageTimer -= Time.deltaTime;
@@ -129,14 +129,20 @@ public class EnemyMain : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        // if dying or recently hit do not run the code
         if (dying || tookDamageTimer > 0) return;
 
+        // get the X velocity based on which direction from the enemy, the player is
         float xVel = transform.position.x > _player.transform.position.x ? -stats.acceleration : stats.acceleration;
 
+        // Add the acceleration to xVelocity
         xVel = Mathf.Clamp(xVel + _rb.velocity.x, -stats.maximumSpeed, stats.maximumSpeed);
+        
+        // apply velocity
         Vector2 newVelocity = new Vector2(xVel, _rb.velocity.y);
         _rb.velocity = newVelocity;
 
+        // Flip Sprite based on movement direction
         if (_rb.velocity.x < 1)
         {
             _sr.flipX = !spriteFlipByDefault;
@@ -147,11 +153,12 @@ public class EnemyMain : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D col)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        if (!col.CompareTag("Player")) return;
+        // Apply Damage
+        if (!other.CompareTag("Player")) return;
         
-        HealthComponent hp = col.gameObject.GetComponent<HealthComponent>();
+        HealthComponent hp = other.gameObject.GetComponent<HealthComponent>();
         if (hp)
         {
             hp.ApplyHealthChange(gameObject, -2);
@@ -160,6 +167,7 @@ public class EnemyMain : MonoBehaviour
 
     IEnumerator HitFlashEffect()
     {
+        // Apply the hit flash effect and set it that we can not take damage during the effect
         float value = 0.0f;
         _hp.SetCanTakeDamage(false);
         tookDamageTimer = tookDamageDuration;

@@ -7,6 +7,7 @@ public class PassiveDamageComponent : MonoBehaviour
     [SerializeField] private int throwbackX = 5;
     [SerializeField] private int throwbackY = 5;
 
+    // Apply Damage, and bounce the player in X and Y axis
     private void OnCollisionEnter2D(Collision2D col)
     {
         RahmivasionStaticLibrary.ApplyGameObjectHealthChange(this.gameObject, col.gameObject, DamageToApply);

@@ -81,13 +81,7 @@ public class AudioManager : MonoBehaviour
         StopAllMusic();
         gameMusic.Play();
     }
-
-    public void PlayMainMenuMusic()
-    {
-        StopAllMusic();
-        mainMenuMusic.Play();  
-    }
-
+    
     private void StopAllMusic()
     {
         gameMusic.Stop();

@@ -18,6 +18,7 @@ public class RSceneManager : MonoBehaviour
 
     private void Awake()
     {
+        // Singleton pattern, using in most Manager scripts
         if (instance != null)
         {
             gameObject.SetActive(false);

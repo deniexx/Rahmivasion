@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        // Singleton pattern, using in most Manager scripts
         if (instance != null)
         {
             gameObject.SetActive(false);

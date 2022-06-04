@@ -99,6 +99,9 @@ public class PlayerScript : MonoBehaviour
     private static readonly int Attack = Animator.StringToHash("_Attack");
     private static readonly int Jump = Animator.StringToHash("_Jump");
 
+    /// <summary>
+    /// A Unity event used to set up the player variables and set the collision to ignore the weapon collider, so we do not deal damage to ourselves
+    /// </summary>
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -110,9 +113,13 @@ public class PlayerScript : MonoBehaviour
         
         col.enabled = false;
         
+        // Ignoring collision with weapon
         Physics2D.IgnoreCollision(col, GetComponent<Collider2D>());
     }
 
+    /// <summary>
+    /// Setting up variables that we need to be done after Awake method to avoid issues
+    /// </summary>
     private void Start()
     {
         _pc.damage = damage;
@@ -120,7 +127,7 @@ public class PlayerScript : MonoBehaviour
         health.text = _healthComp.GetHealth().ToString();
         StartCoroutine(MakeVisible(1));
     }
-
+    
     private void OnEnable()
     {
         _healthComp.OnGameObjectDamaged.AddListener(OnHealthChanged);
@@ -130,19 +137,24 @@ public class PlayerScript : MonoBehaviour
     {
         _healthComp.OnGameObjectDamaged.RemoveListener(OnHealthChanged);
     }
-
+    
     void Update()
     {
+        // If the player is not dead run the update code
         if (!dead)
         {
+            // Process Movement
             ProcessMovement();
-            if (Input.GetKeyDown(KeyCode.F)) TryAttack();
             
+            if (Input.GetKeyDown(KeyCode.F)) TryAttack(); // Used to debug
+            
+            // Cooldown between attacks
             if (attackCooldown > 0.0f)
             {
                 attackCooldown -= Time.deltaTime;
             }
 
+            // Invulnerability time
             if (invulnerabilityTimer > 0.0f)
             {
                 invulnerabilityTimer -= Time.deltaTime;
@@ -151,6 +163,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Tries to attack if the attack cooldown has expired
+    /// </summary>
     public void TryAttack()
     {
         if (attackCooldown > 0.0f) return;
@@ -165,17 +180,21 @@ public class PlayerScript : MonoBehaviour
     {
         if (frozen) return;
 
+        // Getting the player transform and projecting a BoxCollider to check if the player overlaps with the layer for ground/walls and storing that in bGrounded
         var pTransform = transform;
         Vector2 v2GroundedBoxCheckPosition = (Vector2) pTransform.position + new Vector2(0, -0.5f);
         Vector2 v2GroundedBoxCheckScale = (Vector2) pTransform.localScale + new Vector2(-0.02f, 0);
         bool bGrounded = Physics2D.OverlapBox(v2GroundedBoxCheckPosition, v2GroundedBoxCheckScale, 0, lmWalls);
 
+        // Remembering if we have been grounded, used for the coyote time
         fGroundedRemember -= Time.deltaTime;
         if (bGrounded) fGroundedRemember = fGroundedRememberTime;
     
+        // Remembers if we have pressed the jump button, allows for jumping even if we pressed a bit before touching the ground
         fJumpPressedRemember -= Time.deltaTime;
-        if (Input.GetButtonDown("Jump")) fJumpPressedRemember = fJumpPressedRememberTime;
+        if (Input.GetButtonDown("Jump")) fJumpPressedRemember = fJumpPressedRememberTime; // Used to debug
 
+        // Used for debugging, reducing the upwards velocity, when the key has been released
         if (Input.GetButtonUp("Jump"))
         {
             if (_rb.velocity.y > 0)
@@ -186,30 +205,27 @@ public class PlayerScript : MonoBehaviour
             }
         }
 
+        // Checks if we are using swipe input and if so, we set up the inputStrength to always be -1, 0 or 1
         if (isUsingSwipe) inputStrength = autoRunStrength;
         
+        // If we remember being grounded and we remember that jump key is pressed jump
         if ((fJumpPressedRemember > 0) && (fGroundedRemember > 0))
         {
             fJumpPressedRemember = 0;
             fGroundedRemember = 0;
             _rb.velocity = new Vector2(_rb.velocity.x, fJumpVelocity);
         }
-            
+        
         float fHorizontalVelocity = _rb.velocity.x;
 
         ProcessSwipes();
-        
-        //inputStrength = Input.GetAxisRaw("Horizontal");
-        
-        fHorizontalVelocity += inputStrength * fHorizontalAcceleration * Time.deltaTime;
-    
-        if (Math.Abs(Input.GetAxisRaw("Horizontal")) < 0.01f)
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenStopping, Time.deltaTime * 10f);
-        else if ((Mathf.Sign(Input.GetAxisRaw("Horizontal")) != Mathf.Sign(fHorizontalVelocity)))
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenTurning, Time.deltaTime * 10f);
-        else
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingBasic, Time.deltaTime * 10f);
 
+        // Applies horizontal velocity based on direction we are moving
+        fHorizontalVelocity += inputStrength * fHorizontalAcceleration * Time.deltaTime;
+        
+        // Used for slowing down
+        fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingBasic, Time.deltaTime * 10f);
+        
         fHorizontalVelocity = Mathf.Clamp(fHorizontalVelocity, -fMaxSpeed, fMaxSpeed);
     
         AnimateCharacter();
@@ -217,6 +233,7 @@ public class PlayerScript : MonoBehaviour
         _rb.velocity = new Vector2(fHorizontalVelocity, _rb.velocity.y);
         _animator.SetFloat(HorizontalVelocity, Mathf.Abs(_rb.velocity.x));
     
+        // If we are moving very slowly on the X axis, stop and only jump upwards, used for more consistent behaviour when avoiding spikes
         if (Mathf.Abs(_rb.velocity.x) < 0.05)
         {
             _rb.velocity = new Vector2(0.0f, _rb.velocity.y);
@@ -225,6 +242,7 @@ public class PlayerScript : MonoBehaviour
 
     private void ProcessSwipes()
     {
+        // Sets up variables when we start dragging the mouse
         if (Input.GetMouseButtonDown(0))
         {
             startTouchPos = Input.mousePosition;
@@ -232,7 +250,8 @@ public class PlayerScript : MonoBehaviour
             touchStartTime = DateTime.Now;
             touchStarted = true;
         }
-
+        
+        // Checks the swipe after we release the mouse button
         if (Input.GetMouseButtonUp(0) && touchStarted)
         {
             endTouchPos = Input.mousePosition;
@@ -240,7 +259,7 @@ public class PlayerScript : MonoBehaviour
             CheckSwipe();
         }
 
-
+        // Same as above but with touch input
         if (Input.touchCount > 0)
         {
             foreach (Touch touch in Input.touches)
@@ -265,35 +284,40 @@ public class PlayerScript : MonoBehaviour
 
     private void CheckSwipe()
     {
+        // Get how long did it take us to swipe, used to determine whether swipe was intended or only click
         float duration = (float)touchEndTime.Subtract(touchStartTime).TotalSeconds;
-
+    
+        // Get the direction of the swipe
         Vector2 direction = endTouchPos - startTouchPos;
 
         if (duration < swipeTimeThreshold) return;
         if (direction.magnitude < swipeLengthThreshold) return;
 
+        // Evaluate the swipe direction and apply movement input in appropriate direction
         if (direction.x < -100)
         {
-            autoRunStrength = -1;
+            autoRunStrength = -1; // Move left
         }
         else if (direction.x > 100)
         {
-            autoRunStrength = 1;
+            autoRunStrength = 1; // Move Right
         }
         if (direction.y < -100)
         {
-            autoRunStrength = 0;
+            autoRunStrength = 0; // Stop Moving
         }
         else if (direction.y > 100)
         {
-            JumpFromButton();
+            JumpFromButton(); // Jump
         }
     }
 
     private void OnHealthChanged(GameObject instigator, HealthComponent healthComp, float currentHealth, float actualDelta)
     {
+        // Set up the health UI text
         health.text = currentHealth.ToString();
         
+        // If damage has been taken
         if (actualDelta < 0)
         {
             StartCoroutine(HitFlashEffect());
@@ -303,6 +327,7 @@ public class PlayerScript : MonoBehaviour
                 damageTakenWithinArena += actualDelta;
         }
         
+        // If we are dead
         if (currentHealth == 0)
         {
             StopPlayerInPlace();
@@ -356,6 +381,7 @@ public class PlayerScript : MonoBehaviour
         fJumpPressedRemember = fJumpPressedRememberTime;
     }
 
+    // Used for when we release the jump button on screen to adjust Y velocity, that way we have an adaptable jump to hold long you hold it
     public void JumpButtonReleased()
     {
         if (_rb.velocity.y > 0)
@@ -376,6 +402,10 @@ public class PlayerScript : MonoBehaviour
         inputStrength = 0.0f;
     }
 
+    /// <summary>
+    /// Set if the player is Frozen, i.e. Can not move
+    /// </summary>
+    /// <param name="newState">Boolean, the new state, true - can move, false - can not</param>
     public void SetFrozen(bool newState)
     {
         if (newState == true)
@@ -398,6 +428,7 @@ public class PlayerScript : MonoBehaviour
 
     public void ArenaFinished(bool arenaWon)
     {
+        // Check which sound to play based on the outcome of the arena
         if (arenaWon)
         {
             float healthDelta = damageTakenWithinArena / healthOnArenaStart;
@@ -418,8 +449,10 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator MakeVisible(int dir)
     {
+        // Makes the player visible through the shader
         float progress = dir > 0 ? 0.0f : 1.0f;
 
+        // Freezes the player while the effect is happening
         frozen = true;
         
         if (dir > 0)
@@ -444,6 +477,7 @@ public class PlayerScript : MonoBehaviour
             ResetPlayer();
         }
 
+        // Unfreeze player if we have been made visible
         if (progress > 0.5f)
         {
             frozen = false;
@@ -455,6 +489,8 @@ public class PlayerScript : MonoBehaviour
 
     IEnumerator HitFlashEffect()
     {
+        // Apply the hit flash effect to the player and then go back to normal
+        
         float value = _sr.sharedMaterial.GetFloat(HitFlash);
         _healthComp.SetCanTakeDamage(false);
         invulnerabilityTimer = invulnerabilityDuration;
@@ -472,9 +508,7 @@ public class PlayerScript : MonoBehaviour
             _sr.sharedMaterial.SetFloat(HitFlash, value);
             yield return null;
         }
-
-        yield return new WaitForSeconds(0.5f);
-
+        
         yield return null;
     }
 }

@@ -19,6 +19,9 @@ public class Spawner : MonoBehaviour
     private int previousSpawnIndex = 0;
     private List<GameObject> enemiesSpawned = new List<GameObject>();
     
+    /// <summary>
+    /// Reset the variables in the spawner, happens when the player dies, so that he can fight the enemies again
+    /// </summary>
     public void ResetSpawner()
     {
         activated = false;
@@ -36,6 +39,7 @@ public class Spawner : MonoBehaviour
         enemiesSpawned.Clear();
     }
     
+    // Start the arena fight
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (activated) return;
@@ -47,6 +51,7 @@ public class Spawner : MonoBehaviour
         StartCoroutine(SpawnEnemies());
     }
 
+    // When an enemy gets damage, check if it has been killed and if so we check if all enemies have been killed to remove the barriers
     private void OnHealthChanged(GameObject instigator, HealthComponent comp, float currentHealth, float delta)
     {
         if (currentHealth == 0)
@@ -72,6 +77,7 @@ public class Spawner : MonoBehaviour
         }
     }
     
+    // Spawns enemies on a random spawn location, between a time period
     IEnumerator SpawnEnemies()
     {
         int spawnIndex = Random.Range(0, spawnLocations.Count);

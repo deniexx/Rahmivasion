@@ -32,6 +32,7 @@ public class DialogueManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        // Singleton pattern, using in most Manager scripts
         if (instance != null)
         {
             gameObject.SetActive(false);
@@ -50,11 +51,6 @@ public class DialogueManager : MonoBehaviour
     void Start()
     {
         sentences = new Queue<string>();
-    }
-
-    public void SetCanvasCamera()
-    {
-        canvas.worldCamera = Camera.main;
     }
 
     public void StartDialogue()
