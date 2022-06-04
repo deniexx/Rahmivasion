@@ -115,7 +115,7 @@ public class DialogueManager : MonoBehaviour
 
     private void EndDialogue()
     {
-        animator.SetBool("_IsOpen", false);
+        animator.SetBool(IsOpen, false);
         if (ps) ps.SetFrozen(false);
     }
 }

@@ -86,7 +86,7 @@ public class Spawner : MonoBehaviour
 
         previousSpawnIndex = spawnIndex;
         GameObject enemy = Instantiate(enemiesToSpawn[index], spawnLocations[spawnIndex].position, spawnLocations[spawnIndex].rotation);
-        enemy.GetComponent<HealthComponent>().OnGameObjectDamaged.AddListener(OnHealthChanged);
+        enemy.GetComponent<HealthComponent>().OnGameObjectHealthChanged.AddListener(OnHealthChanged);
         enemiesSpawned.Add(enemy);
         index++;
         

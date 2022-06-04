@@ -6,14 +6,14 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyMain : MonoBehaviour
 {
+    [Serializable]
     private enum EnemyType
     {
         Speedy,
         BigBoy,
         Regular
     }
-
-    // Potentially create different scripts for each enemy type and add them as a component to the thingy
+    
     [Serializable]
     private struct EnemyTypeStats
     {
@@ -81,19 +81,19 @@ public class EnemyMain : MonoBehaviour
     
     private void OnEnable()
     {
-        _hp.OnGameObjectDamaged.AddListener(OnGameObjectDamaged);
+        _hp.OnGameObjectHealthChanged.AddListener(OnGameObjectHealthChanged);
     }
 
     private void OnDisable()
     {
-        _hp.OnGameObjectDamaged.RemoveListener(OnGameObjectDamaged);
+        _hp.OnGameObjectHealthChanged.RemoveListener(OnGameObjectHealthChanged);
     }
 
-    private void OnGameObjectDamaged(GameObject instigator, HealthComponent healthcomp, float currenthealth, float actualdelta)
+    private void OnGameObjectHealthChanged(GameObject instigator, HealthComponent healthcomp, float currenthealth, float actualdelta)
     {
         if (actualdelta < 0)
         {
-            _rb.velocity = new Vector2(-_rb.velocity.x, 15);
+            _rb.velocity = new Vector2(-_rb.velocity.x, 15); // Bounce enemy back
             StartCoroutine(HitFlashEffect());
         }
 

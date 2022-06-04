@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 public class HealthComponent : MonoBehaviour
 {
-    public UnityEvent<GameObject, HealthComponent, float, float> OnGameObjectDamaged;
+    public UnityEvent<GameObject, HealthComponent, float, float> OnGameObjectHealthChanged;
 
     [Header("Health Variables")]
     [SerializeField] private float baseHealth = 6.0f;
@@ -37,7 +37,7 @@ public class HealthComponent : MonoBehaviour
         
         float actualDelta = currentHealth - oldHealth;
         
-        OnGameObjectDamaged?.Invoke(instigator, this, currentHealth, actualDelta);
+        OnGameObjectHealthChanged?.Invoke(instigator, this, currentHealth, actualDelta);
 
         return actualDelta != 0;
     }

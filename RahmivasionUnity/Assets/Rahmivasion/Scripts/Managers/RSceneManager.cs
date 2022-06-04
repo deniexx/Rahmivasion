@@ -36,6 +36,7 @@ public class RSceneManager : MonoBehaviour
         StartCoroutine(SwitchToScene(newScene));
     }
 
+    // Asynchronous loads the scene and calls the UnityEvent after if it has been assigned
     private IEnumerator SwitchToScene(string newScene)
     {
         // Start loading the scene
@@ -46,7 +47,6 @@ public class RSceneManager : MonoBehaviour
         // Wait a frame so every Awake and Start method is called
         yield return new WaitForEndOfFrame();
 
-        AfterLoadSceneCall?.Invoke();   
-        AfterLoadSceneCall.RemoveAllListeners();
+        AfterLoadSceneCall?.Invoke();
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,8 +19,6 @@ public class PlayerScript : MonoBehaviour
     [Space(20)]
     [Header("Damping and jump cut height")]
     [SerializeField] [Range(0, 1)] private float fHorizontalDampingBasic = 0.5f;
-    [SerializeField] [Range(0, 1)] private float fHorizontalDampingWhenStopping = 0.7f;
-    [SerializeField] [Range(0, 1)] private float fHorizontalDampingWhenTurning = 0.5f;
     [SerializeField] [Range(0, 1)] private float fJumpCutHeight = 0.5f;
 
     [SerializeField] private float fMaxSpeed = 4f;
@@ -130,12 +127,12 @@ public class PlayerScript : MonoBehaviour
     
     private void OnEnable()
     {
-        _healthComp.OnGameObjectDamaged.AddListener(OnHealthChanged);
+        _healthComp.OnGameObjectHealthChanged.AddListener(OnHealthChanged);
     }
 
     private void OnDisable()
     {
-        _healthComp.OnGameObjectDamaged.RemoveListener(OnHealthChanged);
+        _healthComp.OnGameObjectHealthChanged.RemoveListener(OnHealthChanged);
     }
     
     void Update()
