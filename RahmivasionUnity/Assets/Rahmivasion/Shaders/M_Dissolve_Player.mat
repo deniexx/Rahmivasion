@@ -37,8 +37,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Fade: -0.0036375937
-    - _HitFlash: -0.030175243
+    - _Fade: 1.0047514
+    - _HitFlash: 0
     m_Colors:
     - HitFlashColor: {r: 1, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 0, g: 0.94305634, b: 1, a: 1}
