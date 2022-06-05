@@ -2870,7 +2870,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cef518e3406904bb66e2c8e82efebd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnGameObjectDamaged:
+  OnGameObjectHealthChanged:
     m_PersistentCalls:
       m_Calls: []
   baseHealth: 10
@@ -2917,8 +2917,6 @@ MonoBehaviour:
   fGroundedRememberTime: 0.15
   fHorizontalAcceleration: 45
   fHorizontalDampingBasic: 0.5
-  fHorizontalDampingWhenStopping: 0.7
-  fHorizontalDampingWhenTurning: 0.5
   fJumpCutHeight: 0.5
   fMaxSpeed: 4
   swipeTimeThreshold: 0.1
@@ -2928,14 +2926,14 @@ MonoBehaviour:
   defaultAttackCooldown: 0.75
   invulnerabilityDuration: 2
   col: {fileID: 3938705955118013354}
-  someDamageTaken: {fileID: 0}
-  mediumAmountOfDamageTaken: {fileID: 0}
-  lotsOfDamageTaken: {fileID: 0}
-  noDamageTaken: {fileID: 0}
-  arenaLost: {fileID: 0}
+  someDamageTaken: {fileID: 8300000, guid: d1390de7e8406f243a466363f78d7d9e, type: 3}
+  mediumAmountOfDamageTaken: {fileID: 8300000, guid: f1ce9c5455464434d9564dcf54eb675b, type: 3}
+  lotsOfDamageTaken: {fileID: 8300000, guid: 2ca8920aa3e7fa841b3b8e90b5bc2ebc, type: 3}
+  noDamageTaken: {fileID: 8300000, guid: d982523b3d10ec141a1b7311d062f1d6, type: 3}
+  arenaLost: {fileID: 8300000, guid: e64ead69be232bf448f613567b00d116, type: 3}
   playerAudioSource: {fileID: 2452535554007536889}
-  hit: {fileID: 0}
-  attack: {fileID: 0}
+  hit: {fileID: 8300000, guid: 4022bdeedc9a4eb4ba3e39c7c0d0a94e, type: 3}
+  attack: {fileID: 8300000, guid: 119946d7e995e9b4baac0531ede124c3, type: 3}
   health: {fileID: 1576029779}
 --- !u!82 &2452535554007536889
 AudioSource:

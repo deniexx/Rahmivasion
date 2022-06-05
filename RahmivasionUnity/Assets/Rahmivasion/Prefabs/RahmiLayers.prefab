@@ -890,6 +890,8 @@ MonoBehaviour:
   offsetY: 3
   bomb: {fileID: 7389893483114892597, guid: e2092c4edcc145842b513a5c60cd9372, type: 3}
   laugh: {fileID: -1969016907145629469}
+  minDelay: 2
+  maxDelay: 3
 --- !u!82 &-1969016907145629469
 AudioSource:
   m_ObjectHideFlags: 0
@@ -900,7 +902,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: bbb6aff9abea6674c92838c30689ea11, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
