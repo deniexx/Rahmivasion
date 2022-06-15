@@ -2873,8 +2873,8 @@ MonoBehaviour:
   OnGameObjectHealthChanged:
     m_PersistentCalls:
       m_Calls: []
-  baseHealth: 10
-  maxHealth: 10
+  baseHealth: 20
+  maxHealth: 20
 --- !u!95 &3938705954554513130
 Animator:
   serializedVersion: 3

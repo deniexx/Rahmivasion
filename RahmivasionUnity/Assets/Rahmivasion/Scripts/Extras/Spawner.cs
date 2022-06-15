@@ -84,6 +84,12 @@ public class Spawner : MonoBehaviour
         if (spawnIndex == previousSpawnIndex)
             spawnIndex = spawnIndex + 1 < spawnLocations.Count ? spawnIndex + 1 : spawnIndex - 1;
 
+        if (Mathf.Abs(spawnLocations[spawnIndex].position.x - GameObject.FindGameObjectWithTag("Player").transform.position.x) < 4.0f)
+        {
+            spawnIndex++;
+            if (spawnIndex > spawnLocations.Count) spawnIndex = 0;
+        }
+        
         previousSpawnIndex = spawnIndex;
         GameObject enemy = Instantiate(enemiesToSpawn[index], spawnLocations[spawnIndex].position, spawnLocations[spawnIndex].rotation);
         enemy.GetComponent<HealthComponent>().OnGameObjectHealthChanged.AddListener(OnHealthChanged);

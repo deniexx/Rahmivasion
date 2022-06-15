@@ -259,8 +259,9 @@ public class PlayerScript : MonoBehaviour
         // Same as above but with touch input
         if (Input.touchCount > 0)
         {
-            foreach (Touch touch in Input.touches)
+            for (var i = 0; i < Input.touches.Length; i++)
             {
+                Touch touch = Input.touches[i];
                 if (touch.phase == TouchPhase.Began)
                 {
                     startTouchPos = touch.position;
